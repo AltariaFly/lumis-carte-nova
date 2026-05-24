@@ -233,8 +233,21 @@
     .empty-state { font-size: 13px; color: var(--text-tertiary); text-align: center; padding: 1.5rem 0; line-height: 1.8; }
     .watchlist-item { padding: 10px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .watchlist-item:last-child { border-bottom: none; }
+    .watchlist-item.wl-selected { background: var(--blue-bg); border-radius: var(--radius-md); padding-left: 8px; padding-right: 8px; margin-left: -8px; margin-right: -8px; }
     .watchlist-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
     .watchlist-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .wl-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 99px; background: var(--purple-bg); color: var(--purple-text); border: 0.5px solid var(--purple-border); margin-right: 3px; margin-top: 3px; white-space: nowrap; cursor: default; }
+    .wl-tag-remove { cursor: pointer; opacity: 0.55; font-size: 10px; margin-left: 2px; }
+    .wl-tag-remove:hover { opacity: 1; }
+    .tag-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tag-filter-btn { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 99px; border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+    .tag-filter-btn.active { background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border); }
+    .wl-select-checkbox { width: 17px; height: 17px; accent-color: var(--blue-text); cursor: pointer; flex-shrink: 0; }
+    .wl-select-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); border-top: 0.5px solid var(--border-md); padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom, 10px)); display: flex; align-items: center; gap: 8px; z-index: 100; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); }
+    .wl-select-count { font-size: 13px; font-weight: 500; color: var(--text-secondary); flex: 1; }
+    .tag-input-row { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+    .tag-input-row input { flex: 1; font-size: 12px; padding: 5px 9px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text-primary); }
+    .tag-pills-preview { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; min-height: 4px; }
     .btn-row { display: flex; gap: 6px; margin-bottom: 8px; }
     .btn-row button { flex: 1; margin-bottom: 0; }
     .threshold-note { font-size: 11px; color: var(--text-tertiary); line-height: 1.6; margin-top: 6px; }
@@ -599,6 +612,25 @@
 
     /* Hide sidebar on mobile */
     #desktop-sidebar { display: none; }
+    /* Import modal */
+    .import-modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .import-modal {
+      background: var(--bg); border-radius: 16px;
+      padding: 24px 20px 20px; max-width: 320px; width: 100%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+    .import-modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+    .import-modal p { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.5; }
+    .import-modal-btns { display: flex; flex-direction: column; gap: 8px; }
+    .import-modal-btns button { width: 100%; padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; }
+    .btn-import-merge { background: var(--green-bg); color: var(--green-text); border: 0.5px solid var(--green-border) !important; }
+    .btn-import-replace { background: var(--bg-secondary); color: var(--text-primary); border: 0.5px solid var(--border) !important; }
+    .btn-import-cancel { background: none; color: var(--text-tertiary); font-size: 13px !important; }
   </style>
 </head>
 <body>
@@ -983,14 +1015,13 @@
           <input type="text" id="card-name" placeholder="e.g. Mega Charizard X PSA 10">
         </div>
 
-        <!-- RARITY SELECTOR -->
-        <div style="margin-bottom:10px">
-          <p style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">How often do you see this card? <span style="font-style:italic">(optional)</span></p>
-          <div style="display:flex;gap:6px">
-            <button class="rarity-btn" id="rarity-frequent" onclick="setRarity('frequent')">Frequently</button>
-            <button class="rarity-btn" id="rarity-sometimes" onclick="setRarity('sometimes')">Sometimes</button>
-            <button class="rarity-btn" id="rarity-rarely" onclick="setRarity('rarely')">Rarely</button>
-          </div>
+        <!-- ADD TAGS -->
+        <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+          <button class="secondary btn-small" id="wl-tag-toggle" onclick="toggleTagInput()" style="font-size:11px;color:var(--text-tertiary);padding:3px 9px"><i class="ti ti-tag"></i> Add tags</button>
+          <div class="tag-pills-preview" id="wl-tag-preview" style="flex:1"></div>
+        </div>
+        <div id="wl-tag-input-wrap" style="display:none;margin-bottom:10px">
+          <input type="text" id="wl-tag-input" placeholder="e.g. Grail, Watching, M2A… (Enter or comma to add)" onkeydown="handleTagInput(event)" style="font-size:12px;padding:5px 9px;border-radius:var(--radius-md);border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text-primary);width:100%">
         </div>
 
         <!-- PLATFORM VISIBILITY QUICK TOGGLE -->
@@ -1002,7 +1033,17 @@
         <!-- PRICE INPUTS — rendered dynamically -->
         <div id="price-inputs-container"></div>
 
-        <button class="secondary btn-green" style="margin-top:4px" onclick="saveToWatchlist()"><i class="ti ti-bookmark"></i> Save to Watchlist</button>
+        <!-- RARITY SELECTOR -->
+        <div style="margin-top:10px;margin-bottom:4px">
+          <p style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px">How often do you see this card? <span style="font-style:italic">(optional)</span></p>
+          <div style="display:flex;gap:6px">
+            <button class="rarity-btn" id="rarity-frequent" onclick="setRarity('frequent')">Frequently</button>
+            <button class="rarity-btn" id="rarity-sometimes" onclick="setRarity('sometimes')">Sometimes</button>
+            <button class="rarity-btn" id="rarity-rarely" onclick="setRarity('rarely')">Rarely</button>
+          </div>
+        </div>
+
+        <button class="secondary btn-green" style="margin-top:10px" onclick="saveToWatchlist()"><i class="ti ti-bookmark"></i> Save to Watchlist</button>
       </div>
 
       <!-- ── AUCTION MODE ── -->
@@ -1109,7 +1150,8 @@
         <div class="regret-prompt" id="regret-prompt-d" style="display:none">
           <p class="regret-question">Which would bother you more?</p>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="regret-btn" onclick="skipRegret('d')" style="opacity:0.55">Not sure</button>
+            <button class="regret-btn" onclick="skipRegret('d')">Not sure</button>
+            <button class="regret-btn" onclick="skipRegret('d')">Not really bothered</button>
             <button class="regret-btn" id="d-regret-price" onclick="setRegret('d','price')">Paying too much</button>
             <button class="regret-btn" id="d-regret-miss" onclick="setRegret('d','miss')">Missing the card</button>
             <button class="regret-btn" id="d-regret-both" onclick="setRegret('d','both')">Both equally</button>
@@ -1155,7 +1197,8 @@
         <div class="regret-prompt" id="regret-prompt-sg" style="display:none">
           <p class="regret-question">Which would bother you more?</p>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="regret-btn" onclick="skipRegret('sg')" style="opacity:0.55">Not sure</button>
+            <button class="regret-btn" onclick="skipRegret('sg')">Not sure</button>
+            <button class="regret-btn" onclick="skipRegret('sg')">Not really bothered</button>
             <button class="regret-btn" id="sg-regret-price" onclick="setRegret('sg','price')">Paying too much</button>
             <button class="regret-btn" id="sg-regret-miss" onclick="setRegret('sg','miss')">Missing the card</button>
             <button class="regret-btn" id="sg-regret-both" onclick="setRegret('sg','both')">Both equally</button>
@@ -1191,7 +1234,8 @@
         <div class="regret-prompt" id="regret-prompt-vq" style="display:none">
           <p class="regret-question">Which would bother you more?</p>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="regret-btn" onclick="skipRegret('vq')" style="opacity:0.55">Not sure</button>
+            <button class="regret-btn" onclick="skipRegret('vq')">Not sure</button>
+            <button class="regret-btn" onclick="skipRegret('vq')">Not really bothered</button>
             <button class="regret-btn" id="vq-regret-price" onclick="setRegret('vq','price')">Selling too cheap</button>
             <button class="regret-btn" id="vq-regret-miss" onclick="setRegret('vq','miss')">Holding too long</button>
             <button class="regret-btn" id="vq-regret-both" onclick="setRegret('vq','both')">Both equally</button>
@@ -1232,18 +1276,28 @@
     <div class="section">
       <p class="section-title">My watchlist</p>
       <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">Pre-load cards you're hunting. Tap <strong>Load</strong> at a card show to instantly fill prices.</p>
-      <div class="btn-row" style="margin-bottom:12px">
+      <div class="btn-row" style="margin-bottom:8px">
         <button class="secondary btn-blue btn-small" onclick="exportWatchlist()"><i class="ti ti-download"></i> Export</button>
         <label class="secondary btn-small" style="display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:5px 10px;font-size:12px;background:var(--bg-secondary);color:var(--text-secondary);border:0.5px solid var(--border-md);border-radius:var(--radius-md)">
           <i class="ti ti-upload"></i> Import
           <input type="file" accept=".json" onchange="importWatchlist(event)" style="display:none">
         </label>
+        <button class="secondary btn-small" id="wl-select-btn" onclick="toggleWatchlistSelectMode()" style="display:none"><i class="ti ti-checkbox"></i> Select</button>
       </div>
       <div id="watchlist-search-wrap" style="display:none;margin-bottom:10px">
         <input type="text" id="watchlist-search" placeholder="🔍  Search watchlist…" oninput="renderWatchlist()" style="width:100%;font-size:13px;padding:8px 12px;border-radius:var(--radius-md);border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text-primary)">
       </div>
+      <div id="tag-filter-bar" class="tag-filter-bar" style="display:none"></div>
       <div id="watchlist-list"></div>
     </div>
+  </div>
+  <!-- Selection action bar -->
+  <div id="wl-select-bar" class="wl-select-bar" style="display:none">
+    <span class="wl-select-count" id="wl-select-count">0 selected</span>
+    <button class="secondary btn-small" onclick="selectAllWatchlist()"><i class="ti ti-checkbox"></i> All</button>
+    <button class="secondary btn-small" onclick="clearWatchlistSelection()">None</button>
+    <button class="secondary btn-small" style="color:var(--red-text);border-color:var(--red-border)" onclick="deleteSelectedWatchlist()"><i class="ti ti-trash"></i> Delete</button>
+    <button class="secondary btn-small" onclick="toggleWatchlistSelectMode()">Done</button>
   </div>
 </div>
 
@@ -1252,8 +1306,9 @@
   <div class="container">
     <div class="section">
       <p class="section-title">Session history</p>
-      <div id="history-export-row" style="display:none; margin-bottom:12px">
+      <div id="history-export-row" style="display:none; margin-bottom:12px; gap:8px">
         <button class="secondary btn-blue btn-small" onclick="exportCSV()"><i class="ti ti-download"></i> Export as CSV</button>
+        <button class="secondary btn-small" style="color:var(--text-tertiary)" onclick="clearHistory()"><i class="ti ti-trash"></i> Clear</button>
       </div>
       <div id="history-search-wrap" style="display:none;margin-bottom:10px">
         <input type="text" id="history-search" placeholder="🔍  Search history…" oninput="renderHistory()" style="width:100%;font-size:13px;padding:8px 12px;border-radius:var(--radius-md);border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text-primary)">
@@ -1569,6 +1624,7 @@ function switchTab(tab) {
 // ── MODE ───────────────────────────────────────────────────────
 function switchMode(m) {
   currentMode = m;
+  localStorage.setItem('tcg_active_mode', m);
   const douyinOn = document.getElementById('douyin-enabled').checked;
   ['douyin','sg','vendor'].forEach(mode => {
     document.getElementById('mode-'+mode).style.display = m===mode?'block':'none';
@@ -1600,6 +1656,7 @@ function toggleJPYRate() {
 
 function toggleDouyinMode() {
   const on = isDouyinEnabled();
+  localStorage.setItem('tcg_auction_enabled', on ? 'true' : 'false');
   const douyinTab = document.getElementById('mode-tab-douyin');
   douyinTab.style.display = on ? 'block' : 'none';
   document.getElementById('auction-default-currency-row').style.display = on ? 'flex' : 'none';
@@ -1851,8 +1908,10 @@ function showRegretPrompt(modeKey, signalCls) {
   const promptId = 'regret-prompt-' + modeKey;
   const el = document.getElementById(promptId);
   if (!el) return;
-  // Only show on yellow or red
-  if (signalCls === 'green') {
+  // Show if any platform in this mode has yellow or red signal
+  const res = modeResults[modeKey] || {};
+  const anyNonGreen = Object.values(res).some(r => r.cls !== 'green');
+  if (!anyNonGreen) {
     el.style.display = 'none';
     modeRegret[modeKey] = null;
     ['price','miss','both'].forEach(x => document.getElementById(modeKey+'-regret-'+x)?.classList.remove('active'));
@@ -2090,7 +2149,7 @@ function buildPlatformData(mode) {
       lines.push(`${label}: bidding at <strong>${pct.toFixed(1)}%</strong> ${diffTag(pct)}`);
     } else if (mode === 'sg') {
       const price = parseFloat(document.getElementById('sg-price').value);
-      pct = (price / mktSgd) * 100;
+      pct = (mktSgd / price) * 100;
       ceilVal = 'S$'+(mktSgd*t/100).toFixed(2);
       ceilSub = t+'% of '+label+' avg SGD';
       lines.push(`${label}: buying at <strong>${pct.toFixed(1)}%</strong> ${diffTag(pct)}`);
@@ -2321,6 +2380,7 @@ function clearForm() {
   });
   expandInput();
   updateAvgs();
+  clearTagInput();
 }
 
 // ── SAVE TO HISTORY ────────────────────────────────────────────
@@ -2366,6 +2426,7 @@ function saveHistory(mode) {
     altAvg:altAvg?altAvg.toFixed(2):null,snkrAvg:snkrAvg?snkrAvg.toFixed(2):null,
     price,vpct,note,grail:grailActive,rarity:currentRarity,regret:modeRegret[mkey],
     timestamp:now.toLocaleDateString()+' '+now.toLocaleTimeString()});
+  localStorage.setItem('tcg_history', JSON.stringify(sessionHistory));
   renderHistory();
   clearForm();
   switchTab('checker');
@@ -2423,32 +2484,174 @@ function restoreFromHistory(i) {
 function getWatchlist(){try{return JSON.parse(localStorage.getItem('tcg_watchlist')||'[]');}catch(e){return[];}}
 function saveWatchlistStorage(list){localStorage.setItem('tcg_watchlist',JSON.stringify(list));}
 
+// ── TAG INPUT ──────────────────────────────────────────────────
+let _pendingTags = [];
+function toggleTagInput() {
+  const wrap = document.getElementById('wl-tag-input-wrap');
+  const btn = document.getElementById('wl-tag-toggle');
+  if (!wrap) return;
+  const isOpen = wrap.style.display !== 'none';
+  wrap.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    setTimeout(() => document.getElementById('wl-tag-input')?.focus(), 50);
+    if (btn) { btn.style.color = 'var(--purple-text)'; btn.style.borderColor = 'var(--purple-border)'; btn.style.background = 'var(--purple-bg)'; }
+  } else {
+    if (btn) { btn.style.color = ''; btn.style.borderColor = ''; btn.style.background = ''; }
+  }
+}
+function handleTagInput(e) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const input = document.getElementById('wl-tag-input');
+    const val = input.value.replace(/,/g,'').trim();
+    if (val && !_pendingTags.includes(val)) {
+      _pendingTags.push(val);
+      renderTagPreview();
+    }
+    input.value = '';
+  }
+}
+function renderTagPreview() {
+  const el = document.getElementById('wl-tag-preview');
+  if (!el) return;
+  el.innerHTML = _pendingTags.map((t,i) =>
+    `<span class="wl-tag">${t}<span class="wl-tag-remove" onclick="_pendingTags.splice(${i},1);renderTagPreview()">✕</span></span>`
+  ).join('');
+}
+function clearTagInput() {
+  _pendingTags = [];
+  const el = document.getElementById('wl-tag-input');
+  if (el) el.value = '';
+  const wrap = document.getElementById('wl-tag-input-wrap');
+  if (wrap) wrap.style.display = 'none';
+  const btn = document.getElementById('wl-tag-toggle');
+  if (btn) { btn.style.color = ''; btn.style.borderColor = ''; btn.style.background = ''; }
+  renderTagPreview();
+}
+
+// ── SAVE TO WATCHLIST ──────────────────────────────────────────
 function saveToWatchlist(){
   const name=document.getElementById('card-name').value.trim();
   if(!name){alert('Please enter a card name before saving to watchlist.');return;}
   const altVals=getVals('alt-price');const snkrVals=getVals('snkr-price');
   const yytEl=document.getElementById('yyt-price');const yytJpy=yytEl?parseFloat(yytEl.value):null;
   if(!altVals.length&&!snkrVals.length&&(!yytJpy||isNaN(yytJpy))){alert('Please enter at least some prices before saving.');return;}
+  // Flush any typed-but-not-confirmed tag
+  const tagInputEl = document.getElementById('wl-tag-input');
+  if (tagInputEl && tagInputEl.value.trim()) {
+    const val = tagInputEl.value.trim();
+    if (!_pendingTags.includes(val)) _pendingTags.push(val);
+    tagInputEl.value = '';
+  }
   const list=getWatchlist();
   list.unshift({name,altVals:[...altVals],snkrVals:[...snkrVals],yytJpy:yytJpy||null,
     altAvg:avg(altVals)?avg(altVals).toFixed(2):null,snkrAvg:avg(snkrVals)?avg(snkrVals).toFixed(2):null,
-    rarity:currentRarity||null,saved:new Date().toLocaleDateString()});
-  saveWatchlistStorage(list);renderWatchlist();clearForm();switchTab('watchlist');
+    rarity:currentRarity||null,tags:[..._pendingTags],saved:new Date().toLocaleDateString()});
+  saveWatchlistStorage(list);clearTagInput();renderWatchlist();clearForm();switchTab('watchlist');
 }
 
+// ── TAG FILTER ─────────────────────────────────────────────────
+let _activeTagFilter = null;
+function getAllTags(list) {
+  const tags = new Set();
+  list.forEach(w => (w.tags||[]).forEach(t => tags.add(t)));
+  return [...tags].sort();
+}
+function renderTagFilterBar(list) {
+  const bar = document.getElementById('tag-filter-bar');
+  if (!bar) return;
+  const tags = getAllTags(list);
+  if (!tags.length) { bar.style.display='none'; return; }
+  bar.style.display = 'flex';
+  bar.innerHTML = `<button class="tag-filter-btn${_activeTagFilter===null?' active':''}" onclick="setTagFilter(null)">All</button>` +
+    tags.map(t => `<button class="tag-filter-btn${_activeTagFilter===t?' active':''}" onclick="setTagFilter('${t.replace(/'/g,"\\'")}')">🏷 ${t}</button>`).join('');
+}
+function setTagFilter(tag) {
+  _activeTagFilter = tag;
+  renderWatchlist();
+}
+
+// ── MULTI-SELECT ───────────────────────────────────────────────
+let _wlSelectMode = false;
+let _wlSelected = new Set();
+
+function toggleWatchlistSelectMode() {
+  _wlSelectMode = !_wlSelectMode;
+  _wlSelected.clear();
+  renderWatchlist();
+  const bar = document.getElementById('wl-select-bar');
+  if (bar) bar.style.display = _wlSelectMode ? 'flex' : 'none';
+  updateSelectCount();
+}
+function toggleWatchlistItem(i) {
+  if (_wlSelected.has(i)) _wlSelected.delete(i);
+  else _wlSelected.add(i);
+  updateSelectCount();
+  // Update visual state of the tapped item only
+  const cb = document.getElementById('wl-cb-'+i);
+  if (cb) cb.checked = _wlSelected.has(i);
+  const item = document.getElementById('wl-item-'+i);
+  if (item) item.classList.toggle('wl-selected', _wlSelected.has(i));
+}
+function selectAllWatchlist() {
+  const list = getWatchlist();
+  const query = (document.getElementById('watchlist-search')?.value||'').toLowerCase().trim();
+  const filtered = query ? list.filter(w=>w.name.toLowerCase().includes(query)) : list;
+  const tagged = _activeTagFilter ? filtered.filter(w=>(w.tags||[]).includes(_activeTagFilter)) : filtered;
+  tagged.forEach(w => { const i = list.indexOf(w); _wlSelected.add(i); });
+  updateSelectCount();
+  renderWatchlist();
+}
+function clearWatchlistSelection() {
+  _wlSelected.clear();
+  updateSelectCount();
+  renderWatchlist();
+}
+function updateSelectCount() {
+  const el = document.getElementById('wl-select-count');
+  if (el) el.textContent = _wlSelected.size + ' selected';
+}
+function deleteSelectedWatchlist() {
+  if (!_wlSelected.size) { alert('No cards selected.'); return; }
+  if (!confirm(`Delete ${_wlSelected.size} selected card(s)? This cannot be undone.`)) return;
+  const list = getWatchlist();
+  const indices = [..._wlSelected].sort((a,b)=>b-a);
+  indices.forEach(i => list.splice(i,1));
+  saveWatchlistStorage(list);
+  _wlSelected.clear();
+  updateSelectCount();
+  renderWatchlist();
+}
+function editWatchlistTags(i) {
+  const list = getWatchlist();
+  const w = list[i];
+  const current = (w.tags||[]).join(', ');
+  const input = prompt('Edit tags (comma-separated):', current);
+  if (input === null) return;
+  w.tags = input.split(',').map(t=>t.trim()).filter(Boolean);
+  saveWatchlistStorage(list);
+  renderWatchlist();
+}
+
+// ── RENDER WATCHLIST ───────────────────────────────────────────
 function renderWatchlist(){
   const list=getWatchlist();const el=document.getElementById('watchlist-list');
   const searchWrap=document.getElementById('watchlist-search-wrap');
+  const selectBtn=document.getElementById('wl-select-btn');
   const query=(document.getElementById('watchlist-search')?.value||'').toLowerCase().trim();
-  // Show search bar only when 5+ items
   if(searchWrap) searchWrap.style.display=list.length>=5?'block':'none';
+  if(selectBtn) selectBtn.style.display=list.length?'flex':'none';
+  renderTagFilterBar(list);
   if(!list.length){el.innerHTML='<p class="empty-state"><i class="ti ti-bookmark-off"></i><br>No cards saved yet.<br>Fill in card details &amp; prices in Checker,<br>then tap "Save to Watchlist".</p>';return;}
-  const filtered=query?list.filter((w,i)=>w.name.toLowerCase().includes(query)):list;
+  let filtered=query?list.filter(w=>w.name.toLowerCase().includes(query)):list;
+  if(_activeTagFilter) filtered=filtered.filter(w=>(w.tags||[]).includes(_activeTagFilter));
   if(!filtered.length){el.innerHTML='<p class="empty-state"><i class="ti ti-search"></i><br>No cards match your search.</p>';return;}
   el.innerHTML=filtered.map((w)=>{
-    // Keep original index for load/delete actions
     const i=list.indexOf(w);
-    return `<div class="watchlist-item">
+    const isSelected=_wlSelected.has(i);
+    const tagsHtml=(w.tags&&w.tags.length)?w.tags.map(t=>`<span class="wl-tag">${t}</span>`).join(''):'';
+    return `<div class="watchlist-item${isSelected?' wl-selected':''}" id="wl-item-${i}" onclick="${_wlSelectMode?`toggleWatchlistItem(${i})`:''}">
+      ${_wlSelectMode?`<input type="checkbox" class="wl-select-checkbox" id="wl-cb-${i}" ${isSelected?'checked':''} onclick="event.stopPropagation();toggleWatchlistItem(${i})" style="margin-right:4px">`:''}
       <div style="flex:1;min-width:0">
         <div class="watchlist-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.name}</div>
         <div class="watchlist-meta">
@@ -2457,11 +2660,12 @@ function renderWatchlist(){
           ${w.yytJpy?`<span class="plat-meta yyt" style="display:inline-flex;align-items:center;gap:3px;margin-left:6px"><span class="plat-dot yyt"></span>¥${w.yytJpy}</span>`:''}
           <span style="color:var(--text-tertiary);margin-left:6px">· ${w.saved}</span>
         </div>
+        ${tagsHtml?`<div style="margin-top:2px">${tagsHtml}<span class="wl-tag" style="opacity:0.55;cursor:pointer" onclick="event.stopPropagation();editWatchlistTags(${i})"><i class="ti ti-pencil" style="font-size:10px"></i></span></div>`:`<div style="margin-top:2px"><span class="wl-tag" style="opacity:0.45;cursor:pointer;font-size:10px" onclick="event.stopPropagation();editWatchlistTags(${i})"><i class="ti ti-tag" style="font-size:10px"></i> add tag</span></div>`}
       </div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
+      ${!_wlSelectMode?`<div style="display:flex;gap:6px;flex-shrink:0">
         <button class="secondary btn-small btn-green" onclick="loadWatchlistItem(${i})"><i class="ti ti-download"></i> Load</button>
         <button class="secondary btn-small" style="color:var(--red-text);border-color:var(--red-border)" onclick="deleteWatchlistItem(${i})"><i class="ti ti-trash"></i></button>
-      </div>
+      </div>`:''}
     </div>`;
   }).join('');
 }
@@ -2494,18 +2698,53 @@ function exportWatchlist(){
   a.href=url;a.download='tcg-watchlist-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);
 }
 
+let _importPending = null;
+function resolveImport(choice){
+  document.getElementById('import-modal').style.display='none';
+  if(!_importPending || choice==='cancel'){_importPending=null;return;}
+  const {imported, existing} = _importPending;
+  _importPending = null;
+  if(choice==='merge'){
+    const key=item=>`${(item.name||'').toLowerCase()}|${item.altAvg||''}|${item.snkrAvg||''}|${item.yytJpy||''}`;
+    const existingKeys=new Set(existing.map(key));
+    const newItems=imported.filter(item=>!existingKeys.has(key(item)));
+    saveWatchlistStorage([...newItems,...existing]);
+    renderWatchlist();
+    alert(`Merged! Added ${newItems.length} new card(s).${imported.length-newItems.length>0?' '+(imported.length-newItems.length)+' duplicate(s) skipped.':''}`);
+  } else {
+    saveWatchlistStorage(imported);
+    renderWatchlist();
+    alert(`Replaced! Loaded ${imported.length} card(s).`);
+  }
+}
 function importWatchlist(event){
   const file=event.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
-    try{const imported=JSON.parse(e.target.result);if(!Array.isArray(imported)){alert('Invalid watchlist file.');return;}
-    saveWatchlistStorage([...imported,...getWatchlist()]);renderWatchlist();alert(`Imported ${imported.length} card(s)!`);}
+    try{
+      const imported=JSON.parse(e.target.result);
+      if(!Array.isArray(imported)){alert('Invalid watchlist file.');return;}
+      const existing=getWatchlist();
+      if(existing.length===0){
+        saveWatchlistStorage(imported);renderWatchlist();
+        alert(`Imported ${imported.length} card(s)!`);return;
+      }
+      _importPending={imported, existing};
+      document.getElementById('import-modal-msg').textContent=`You have ${existing.length} card(s) in your watchlist. What would you like to do?`;
+      document.getElementById('import-modal').style.display='flex';
+    }
     catch(err){alert('Could not read file.');}
   };
   reader.readAsText(file);event.target.value='';
 }
 
 // ── EXPORT CSV ─────────────────────────────────────────────────
+function clearHistory(){
+  if(!confirm('Clear all history? This cannot be undone.')) return;
+  sessionHistory.length = 0;
+  localStorage.removeItem('tcg_history');
+  renderHistory();
+}
 function exportCSV(){
   if(!sessionHistory.length)return;
   const headers=['Card Name','Mode','Price','Currency','ALT Avg USD','SNKR Avg USD','YYT JPY','% of Market','Result','Grail','Rarity','Regret','Note','Date & Time'];
@@ -2732,19 +2971,24 @@ if (localStorage.getItem('tcg_onboarding_done') === 'true') {
 
 renderPlatformInputs();
 renderWatchlist();
+// Restore history from localStorage
+const savedHistory = localStorage.getItem('tcg_history');
+if (savedHistory) { try { const h = JSON.parse(savedHistory); h.forEach(e => sessionHistory.push(e)); } catch(e) {} }
 renderHistory();
 setPreset(90,'balanced');
 
-// Default: Douyin off, I'm buying active
-document.getElementById('douyin-enabled').checked = false;
+// Restore auction enabled state from localStorage
+const auctionWasEnabled = localStorage.getItem('tcg_auction_enabled') === 'true';
+document.getElementById('douyin-enabled').checked = auctionWasEnabled;
 // Restore auction default currency setting
 const savedAuctionCur = localStorage.getItem('tcg_auction_default_currency') || 'sgd';
 if (document.getElementById('auction-default-currency')) {
   document.getElementById('auction-default-currency').value = savedAuctionCur;
 }
 toggleDouyinMode();
-switchMode('sg');
-document.getElementById('mode-tab-sg').className = 'mode-tab active';
+const savedMode = localStorage.getItem('tcg_active_mode') || 'sg';
+const restoredMode = (savedMode === 'douyin' && !auctionWasEnabled) ? 'sg' : savedMode;
+switchMode(restoredMode);
 document.getElementById('mode-tab-vendor').className = 'mode-tab';
 
 // Show desktop results placeholder on init
@@ -2756,5 +3000,18 @@ if(!localStorage.getItem('tcg_guide_seen')){
 }
 </script>
 </div><!-- end #main-content -->
+  <!-- IMPORT WATCHLIST MODAL -->
+  <div class="import-modal-overlay" id="import-modal" style="display:none">
+    <div class="import-modal">
+      <h3>Import Watchlist</h3>
+      <p id="import-modal-msg">You already have cards in your watchlist. What would you like to do?</p>
+      <div class="import-modal-btns">
+        <button class="btn-import-merge" onclick="resolveImport('merge')"><i class="ti ti-git-merge"></i> Merge — keep mine &amp; add new</button>
+        <button class="btn-import-replace" onclick="resolveImport('replace')"><i class="ti ti-refresh"></i> Replace — overwrite with imported</button>
+        <button class="btn-import-cancel" onclick="resolveImport('cancel')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

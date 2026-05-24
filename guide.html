@@ -29,8 +29,6 @@
       --alt-color:  #4A90D9; --alt-bg:  rgba(74,144,217,0.12);
       --snkr-color: #6B44A8; --snkr-bg: rgba(107,68,168,0.12);
       --yyt-color:  #B85490; --yyt-bg:  rgba(184,84,144,0.12);
-      --pc-color:   #2A9D8F; --pc-bg:   rgba(42,157,143,0.12);
-      --tcgp-color: #E67E22; --tcgp-bg: rgba(230,126,34,0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: var(--night); color: var(--cream); min-height: 100vh; }
@@ -105,11 +103,8 @@
     .platform-card h4 { font-size: 12px; font-weight: 700; color: var(--cream); margin-bottom: 3px; }
     .platform-card p { font-size: 11px; color: var(--star-dim); line-height: 1.4; }
     .platform-tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; margin-top: 4px; }
-    .tag-alt  { background: var(--alt-bg);  color: var(--alt-color);  border: 1px solid rgba(74,144,217,0.25); }
-    .tag-snkr { background: var(--snkr-bg); color: var(--snkr-color); border: 1px solid rgba(107,68,168,0.25); }
-    .tag-jpy  { background: var(--gold-bg); color: var(--gold);       border: 1px solid rgba(245,200,66,0.2); }
-    .tag-pc   { background: var(--pc-bg);   color: var(--pc-color);   border: 1px solid rgba(42,157,143,0.25); }
-    .tag-tcgp { background: var(--tcgp-bg); color: var(--tcgp-color); border: 1px solid rgba(230,126,34,0.25); }
+    .tag-usd { background: var(--alt-bg); color: var(--alt-color); border: 1px solid rgba(74,144,217,0.25); }
+    .tag-jpy { background: var(--gold-bg); color: var(--gold); border: 1px solid rgba(245,200,66,0.2); }
 
     /* ── SIGNALS ── */
     .signals { display: flex; flex-direction: column; gap: 8px; }
@@ -171,29 +166,22 @@
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-content">
-        <h3>Set up your platforms</h3>
-        <p>On your first login, Lumis Carte will ask what you collect — JP singles, EN slabs, a bit of everything. Based on your answer, it pre-selects the most relevant platforms for you. You can adjust anytime in Settings.</p>
-        <span class="tip">💡 Choose up to 3 platforms — keeps your checker clean and focused</span>
+        <h3>Enter the card details</h3>
+        <p>Type the card name, set, and grade. Look up recent sold prices on ALT, SNKRDUNK, or Yuyutei and enter them in — the app averages and converts everything automatically.</p>
+        <span class="tip">💡 Tap the shortcut buttons next to each platform name to open them directly</span>
+        <span class="tip" style="margin-top:4px">💡 Tap <strong>Add tags</strong> to label the card (e.g. Grail, Watching, M2A) before saving to Watchlist</span>
+        <span class="tip" style="margin-top:4px">💡 Optionally tell the app how often you see this card — it will help provide context and advise you accordingly</span>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <div class="step-content">
-        <h3>Enter the card details</h3>
-        <p>Type the card name, set, and grade. Look up recent sold prices on your active platforms and enter them in — the app averages and converts everything automatically.</p>
-        <span class="tip">💡 Tap the shortcut buttons next to each platform name to open them directly</span>
-        <span class="tip" style="margin-top:4px">💡 Optionally tell the app how often you see this card — it will help to provide some context and advise you accordingly</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
       <div class="step-content">
         <h3>Pick your mode and enter the price</h3>
         <p>Tap <strong>I'm buying</strong>, <strong>I'm selling</strong>, or <strong>Auction</strong>, key in the price, and hit Check. The app instantly shows your signal and a commentary line tailored to the situation.</p>
       </div>
     </div>
     <div class="step">
-      <div class="step-num">4</div>
+      <div class="step-num">3</div>
       <div class="step-content">
         <h3>Save and move on</h3>
         <p>Add an optional note, then tap <strong>Clear &amp; Save to History</strong> to log the check and start fresh.</p>
@@ -232,13 +220,13 @@
       <div class="icon">📊</div>
       <h4>ALT.xyz</h4>
       <p>Up to 5 recent sales, averaged automatically</p>
-      <span class="platform-tag tag-alt">USD</span>
+      <span class="platform-tag tag-usd">USD</span>
     </div>
     <div class="platform-card">
       <div class="icon">🎌</div>
       <h4>SNKRDUNK</h4>
       <p>Up to 5 recent sales, averaged automatically</p>
-      <span class="platform-tag tag-snkr">USD</span>
+      <span class="platform-tag tag-usd">USD</span>
     </div>
     <div class="platform-card">
       <div class="icon">🏪</div>
@@ -246,20 +234,8 @@
       <p>Single retail price entry</p>
       <span class="platform-tag tag-jpy">JPY</span>
     </div>
-    <div class="platform-card">
-      <div class="icon">📈</div>
-      <h4>PriceCharting</h4>
-      <p>Single price entry · covers EN &amp; JP cards</p>
-      <span class="platform-tag tag-pc">USD</span>
-    </div>
-    <div class="platform-card">
-      <div class="icon">🃏</div>
-      <h4>TCGplayer</h4>
-      <p>Single price entry · EN cards</p>
-      <span class="platform-tag tag-tcgp">USD</span>
-    </div>
   </div>
-  <p class="body-note">All prices convert automatically to SGD, USD, CNY, and JPY using live exchange rates. Toggle any platform on or off per check using the quick pills in the Checker. Your active platforms are set during onboarding and adjustable anytime in Settings.</p>
+  <p class="body-note">All prices convert automatically to SGD, USD, CNY, and JPY using live exchange rates. Toggle any platform on or off per check using the quick pills in the Checker.</p>
 
   <div class="divider"></div>
 
@@ -304,6 +280,16 @@
       <p>Pre-load cards with prices before a show. At the table, tap Load → key in the vendor price → check instantly.</p>
     </div>
     <div class="feature-card">
+      <div class="feature-icon">🏷️</div>
+      <h4>Watchlist tags</h4>
+      <p>Label cards with custom tags like Grail, Watching, or M2A. Filter your list by tag with one tap. Edit tags anytime via the pencil icon on each card.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">☑️</div>
+      <h4>Multi-select</h4>
+      <p>Tap Select to enter selection mode. Checkbox each card you want, then bulk delete in one go. Select All works with your current search and tag filter.</p>
+    </div>
+    <div class="feature-card">
       <div class="feature-icon">📤</div>
       <h4>Share watchlist</h4>
       <p>Export your watchlist as a file and share via WhatsApp. Friends import it on their own device.</p>
@@ -344,11 +330,15 @@
     </div>
     <div class="tip-row">
       <div class="tip-icon">🔀</div>
-      <p><strong>Check all platforms:</strong> Toggle between your active platforms — ALT, SNKRD, YYT, PC, and TCGP — prices can differ significantly for the same card across markets. Enable or disable platforms in Settings anytime.</p>
+      <p><strong>Check all platforms:</strong> Toggle between ALT, SNKRD, and YYT — prices can differ significantly for the same card across markets.</p>
     </div>
     <div class="tip-row">
       <div class="tip-icon">👁️</div>
       <p><strong>Collapsed input bar:</strong> Once you've entered a price and collapsed the panel, the bar shows your entered price at a glance — so you always know what you're checking against.</p>
+    </div>
+    <div class="tip-row">
+      <div class="tip-icon">🏷️</div>
+      <p><strong>Organise your watchlist:</strong> Tag cards before saving — Grail, Watching, M2A, whatever works for you. Use the tag filter bar to zero in on one group instantly, or multi-select to clear out old entries in bulk.</p>
     </div>
     <div class="tip-row">
       <div class="tip-icon">👑</div>
