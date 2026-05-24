@@ -2149,7 +2149,7 @@ function buildPlatformData(mode) {
       lines.push(`${label}: bidding at <strong>${pct.toFixed(1)}%</strong> ${diffTag(pct)}`);
     } else if (mode === 'sg') {
       const price = parseFloat(document.getElementById('sg-price').value);
-      pct = (mktSgd / price) * 100;
+      pct = (price / mktSgd) * 100;
       ceilVal = 'S$'+(mktSgd*t/100).toFixed(2);
       ceilSub = t+'% of '+label+' avg SGD';
       lines.push(`${label}: buying at <strong>${pct.toFixed(1)}%</strong> ${diffTag(pct)}`);
